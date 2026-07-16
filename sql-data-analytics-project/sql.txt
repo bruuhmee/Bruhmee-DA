@@ -1,0 +1,90 @@
+# 📊 Sales Data Analysis with SQL
+
+## 🔹 Project Overview
+When I first looked at the **80,000+ transactional records** in the sales database, it felt like staring at an ocean of numbers 🌊. Patterns existed, but without structure, they weren’t useful for decision-making.  
+
+So, I designed a **Gold-Layer SQL Reporting System** to transform raw data into **actionable business insights**.  
+This system automates reporting, reduces manual effort, and provides clarity on **customers, products, and sales performance**.  
+
+---
+
+## 🎯 Objectives
+- Create **fact-dimension models** for structured reporting.  
+- Automate **ETL pipelines** to prepare clean and reliable datasets.  
+- Build **reporting layers** (Sales, Customer, Product) with reusable SQL queries.  
+- Generate **business-ready dashboards** with KPIs, trends, and insights.  
+
+---
+
+## 🛠️ Tools & Technologies
+- **SQL Server / PostgreSQL** – Querying & modeling  
+- **Excel** – Validation & pivot-based analysis  
+- **GitHub** – Version control & portfolio publishing  
+
+---
+
+## 🧩 Project Workflow
+The project was structured into three reporting modules:
+
+### 1️⃣ Sales Report – `gold.report_sales`
+- Built KPIs for:
+  - **Revenue**
+  - **YoY Growth**
+  - **Margins**
+  - **Order Trends**
+- **SQL Functions Used:**  
+  - `SUM()`, `AVG()`, `ROUND()`, `DATETRUNC()`, `COUNT()`
+- **Insight:** Clear monthly/annual trends + top-performing categories  
+
+---
+
+### 2️⃣ Customer Report – `gold.report_customers`
+- Segmented customers into:
+  - **VIP** (high value, repeat orders)  
+  - **Regular** (consistent buyers)  
+  - **New** (recently onboarded)  
+- Designed KPIs:
+  - **Recency**
+  - **Customer Lifetime Value (CLV)**
+  - **Average Order Value (AOV)**
+- **SQL Functions Used:**  
+  - `CASE WHEN`, `DATEDIFF()`, `COUNT(DISTINCT)`, `SUM()`
+- **Insight:** Identified retention gaps & loyalty opportunities  
+
+---
+
+### 3️⃣ Product Report – `gold.report_products`
+- Ranked products into:
+  - **High-Performer**  
+  - **Mid-Range**  
+  - **Low-Performer**  
+- Designed KPIs:
+  - **Revenue Contribution**
+  - **Product Lifespan**
+  - **Average Selling Price (ASP)**
+- **SQL Functions Used:**  
+  - `RANK()`, `LAG()`, `OVER (PARTITION BY … ORDER BY …)`  
+- **Insight:** Showed which products fuel growth & which need reevaluation  
+
+---
+
+## 📌 Example Queries
+
+### Part-to-Whole Analysis (Category Contribution)
+```sql
+WITH category_sales AS (
+    SELECT
+        p.category,
+        SUM(f.sales_amount) AS total_sales
+    FROM gold.fact_sales f
+     LEFT JOIN gold.dim_products p
+        ON p.product_key = f.product_key
+    GROUP BY p.category
+)
+SELECT
+    category,
+    total_sales,
+    SUM(total_sales) OVER () AS overall_sales,
+    ROUND((CAST(total_sales AS FLOAT) / SUM(total_sales) OVER ()) * 100, 2) AS percentage_of_total
+FROM category_sales
+ORDER BY total_sales DESC;
